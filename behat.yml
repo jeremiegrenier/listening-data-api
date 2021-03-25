@@ -1,0 +1,7 @@
+default:
+  extensions:
+    Imbo\BehatApiExtension:
+      apiClient:
+        base_uri: http://listening-data-api-nginx
+        timeout: 5.0
+        verify: false

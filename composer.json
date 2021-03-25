@@ -20,6 +20,8 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.18",
         "phpstan/phpstan": "^0.12.82",
-        "icanhazstring/composer-unused": "^0.7.5"
+        "icanhazstring/composer-unused": "^0.7.5",
+        "behat/behat": "^3.8",
+        "imbo/behat-api-extension": "^2.3"
     }
 }
