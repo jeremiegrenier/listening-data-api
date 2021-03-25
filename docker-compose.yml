@@ -1,0 +1,40 @@
+version: "3.4"
+
+services:
+  # PHP container
+  listening-data-api-php:
+    image: ${IMAGE_NAME}-php:${IMAGE_TAG}
+    environment:
+      - APP_ENV=prod
+
+  # Nginx container
+  listening-data-api-nginx:
+    environment:
+      - VIRTUAL_HOST=listening-data-api
+    image: ${IMAGE_NAME}-nginx:${IMAGE_TAG}
+    ports:
+      - 9090:80
+    labels:
+      - traefik.http.routers.listening-data-api.rule=Host(`listening-data-api`)
+    depends_on:
+      - listening-data-api-php
+
+  # Mysql container
+  listening-data-api-data:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    command: --performance-schema --secure-file-priv=""
+    volumes:
+      - sqldata:/var/lib/mysql
+      - ./init_database.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./data:/docker-entrypoint-initdb.d/init_data
+
+volumes:
+  sqldata:

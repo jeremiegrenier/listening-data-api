@@ -1,0 +1,12 @@
+version: "3.4"
+
+services:
+  # PHP container
+  listening-data-api-php:
+    volumes:
+      - ${DOCKER_HOST_WORKING_DIR}:/var/www
+
+  # Nginx container
+  listening-data-api-nginx:
+    volumes:
+      - ${DOCKER_HOST_WORKING_DIR}/public:/var/www/public:ro
