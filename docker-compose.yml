@@ -5,7 +5,11 @@ services:
   listening-data-api-php:
     image: ${IMAGE_NAME}-php:${IMAGE_TAG}
     environment:
-      - APP_ENV=prod
+      APP_ENV: prod
+      MYSQL_HOST: listening-data-api-data
+      MYSQL_USERNAME: ${MYSQL_USER}
+      MYSQL_PASSWD: ${MYSQL_PASSWORD}
+      MYSQL_DBNAME: ${MYSQL_DB}
 
   # Nginx container
   listening-data-api-nginx:

@@ -6,8 +6,6 @@ SHELL := /bin/bash
 IMAGE_NAME?=listening-data-api
 IMAGE_TAG?=latest
 
-
-
 ## Build Docker images
 docker-build:
 	DOCKER_BUILDKIT=1 docker build -t ${IMAGE_NAME}-php:${IMAGE_TAG} --ssh default . --target php
@@ -42,13 +40,21 @@ docker-fix-permissions:
 
 ## Run ci tests on docker
 docker-test-ci:
+	docker-compose run -T listening-data-api-php composer install --no-scripts
 	docker-compose run -T listening-data-api-php make ./vendor/bin/codecept run unit
-	docker-compose down --remove-orphans
 
 ## Run tests on docker
 docker-test:
+	docker-compose run -T listening-data-api-php composer install --no-scripts
 	docker-compose run --rm -T listening-data-api-php ./vendor/bin/codecept run --coverage --coverage-html
 
 ## Run cs on docker
 docker-cs:
+	docker-compose run -T listening-data-api-php composer install --no-scripts
 	docker-compose run --rm -T listening-data-api-php ./vendor/bin/php-cs-fixer fix
+
+## Run qa on docker
+docker-qa:
+	docker-compose run -T listening-data-api-php composer install --no-scripts
+	docker-compose run --rm -T listening-data-api-php ./vendor/bin/composer-unused
+	docker-compose run --rm -T listening-data-api-php ./vendor/bin/phpstan analyse src --level 8

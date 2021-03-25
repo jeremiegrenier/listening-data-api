@@ -10,29 +10,37 @@ require_once '../vendor/autoload.php';
  */
 function main(): \App\Model\FormattedResponse
 {
+    $container = new DI\Container();
+
     $uri = $_SERVER['REQUEST_URI'];
     $httpVerb = $_SERVER['REQUEST_METHOD'];
     $queryString = $_SERVER['QUERY_STRING'];
+    $body = json_decode(file_get_contents('php://input'), true);
     parse_str($queryString, $parsedQueryString);
 
     $queryParamsMatches = [];
     try {
         if (preg_match('#^/manager$#', $uri)) {
             if ('GET' !== $httpVerb) {
-                throw new \App\Exception\MethodNotAllowedException();
+                throw new \App\Exception\MethodNotAllowedException($httpVerb);
             }
-            $controller = new \App\Controller\ManagerController();
+            $controller = $container->get(\App\Controller\ManagerController::class);
 
             return $controller->getCompiledData();
         }
 
         if (preg_match('#^/artists/(?<artistId>[^?/]*)(/|\?.*)?$#', $uri, $queryParamsMatches)) {
-            if ('GET' !== $httpVerb) {
-                throw new \App\Exception\MethodNotAllowedException();
-            }
-            $controller = new \App\Controller\ArtistController();
+            $controller = $container->get(\App\Controller\ArtistController::class);
 
-            return $controller->get($queryParamsMatches['artistId'], $parsedQueryString);
+            switch ($httpVerb)
+            {
+                case 'GET':
+                    return $controller->getListeningStatistics($queryParamsMatches['artistId'], $parsedQueryString);
+                case 'PATCH':
+                    return $controller->patchArtist($queryParamsMatches['artistId'], $body);
+                default:
+                    throw new \App\Exception\MethodNotAllowedException($httpVerb);
+            }
         }
 
         throw new \App\Exception\RouteNotFoundException();
