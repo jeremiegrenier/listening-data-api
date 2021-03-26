@@ -64,8 +64,7 @@ class ArtistsManager
             throw new ArtistNotFoundException($artistId);
         }
 
-        foreach ($operations as $operation)
-        {
+        foreach ($operations as $operation) {
             if (!array_key_exists('op', $operation)) {
                 throw new MissingOperationElementException('op');
             }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Exception\DatabaseException;
+
 /**
  * Class MysqlConnection.
  *
@@ -19,12 +21,16 @@ class MysqlConnection
     public function getInstance(): \mysqli
     {
         if (null === $this->instance) {
-            $this->instance = new \mysqli(
-                getenv('MYSQL_HOST'),
-                getenv('MYSQL_USERNAME'),
-                getenv('MYSQL_PASSWD'),
-                getenv('MYSQL_DBNAME')
-            );
+            if (
+                false === ($host = getenv('MYSQL_HOST'))
+                || false === ($username = getenv('MYSQL_USERNAME'))
+                || false === ($passwd = getenv('MYSQL_PASSWD'))
+                || false === ($dbname = getenv('MYSQL_DBNAME'))
+            ) {
+                throw new DatabaseException();
+            }
+
+            $this->instance = new \mysqli($host, $username, $passwd, $dbname);
         }
         return $this->instance;
     }

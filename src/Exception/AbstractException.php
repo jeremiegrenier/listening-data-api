@@ -15,7 +15,6 @@ use Exception;
  */
 abstract class AbstractException extends Exception implements ExceptionInterface
 {
-
     public function __construct()
     {
         parent::__construct(static::getExceptionMessage(), static::getStatusCode());

@@ -67,12 +67,11 @@ class ArtistController
      */
     public function patchArtist(string $artistId, ?array $body): FormattedResponse
     {
-        if(!$this->isValidOperationArray($body))
-        {
+        if (!$this->isValidOperationArray($body)) {
             throw new InvalidOperationFormatException();
         }
 
-       $this->artistsManager->updateArtistsFromOperation((int) $artistId, $body);
+        $this->artistsManager->updateArtistsFromOperation((int) $artistId, $body);
 
         return new FormattedResponse(
             true,
@@ -83,25 +82,20 @@ class ArtistController
 
     private function isValidOperationArray($operations): bool
     {
-        if(!is_array($operations))
-        {
+        if (!is_array($operations)) {
             return false;
         }
 
-        foreach ($operations as $operation)
-        {
-            if(!is_array($operation))
-            {
+        foreach ($operations as $operation) {
+            if (!is_array($operation)) {
                 return false;
             }
 
-            if(!array_key_exists('op', $operation))
-            {
+            if (!array_key_exists('op', $operation)) {
                 return  false;
             }
 
-            if(!array_key_exists('path', $operation))
-            {
+            if (!array_key_exists('path', $operation)) {
                 return  false;
             }
         }

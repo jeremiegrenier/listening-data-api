@@ -63,3 +63,24 @@ Feature: Detailed artist view
           }
       }
       """
+
+  Scenario: Artist not exist
+    Given there is an artist "testArtist" with id "5"
+    And Artist "5" has "3" stream from "F" on "2021-03-25"
+    And Artist "5" has "3" stream from "H" on "2021-03-25"
+    When I request "/artists/7?year=2020"
+    Then the response code is 404
+    And I should see a formatted response
+    And the response body contains JSON:
+      """
+      {
+          "data": [],
+          "errors": [
+          {
+              "message": "Artist \"7\" not exist",
+              "internalDetail": "Artist \"7\" not exist",
+              "context": null
+          }
+      ]
+      }
+      """

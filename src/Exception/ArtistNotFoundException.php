@@ -18,8 +18,8 @@ class ArtistNotFoundException extends AbstractException
 
     public function __construct(int $artistId)
     {
-        parent::__construct();
         $this->artistId = $artistId;
+        parent::__construct();
     }
 
     /**

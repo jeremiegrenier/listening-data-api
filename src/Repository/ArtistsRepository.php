@@ -16,7 +16,7 @@ use App\Exception\UpdateNotAllowedException;
  */
 class ArtistsRepository
 {
-    CONST ALLOWED_FIELDS_UPDATE = ['twitter', 'status'];
+    const ALLOWED_FIELDS_UPDATE = ['twitter', 'status'];
 
     /** @var MysqlConnection */
     private $connection;
@@ -41,16 +41,18 @@ class ArtistsRepository
         $stmt = $i->prepare($sql);
 
         $stmt->bind_param('i', $artistId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        if (!$stmt->execute()) {
+            return false;
+        }
+        $stmt->store_result();
+        $stmt->fetch();
 
-        return 0 !== $result->num_rows;
+        return 0 !== $stmt->num_rows;
     }
 
     public function updateFieldOnArtist(int $artistId, string $field, $value): bool
     {
-        if(!in_array($field, self::ALLOWED_FIELDS_UPDATE))
-        {
+        if (!in_array($field, self::ALLOWED_FIELDS_UPDATE)) {
             throw new UpdateNotAllowedException();
         }
 
@@ -61,9 +63,8 @@ class ArtistsRepository
 
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
-        if(false === $stmt)
-        {
-            throw new DatabaseException($i->error);
+        if (false === $stmt) {
+            throw new DatabaseException();
         }
 
         $stmt->bind_param('si', $value, $artistId);

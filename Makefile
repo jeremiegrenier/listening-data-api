@@ -38,15 +38,10 @@ docker-logs:
 docker-fix-permissions:
 	docker-compose run --rm ${IMAGE_NAME}-php chown -R $$(id -u):$$(id -g) .
 
-## Run ci tests on docker
-docker-test-ci:
-	docker-compose run -T listening-data-api-php composer install --no-scripts
-	docker-compose run -T listening-data-api-php make ./vendor/bin/codecept run unit
-
 ## Run tests on docker
 docker-test:
 	docker-compose run -T listening-data-api-php composer install --no-scripts
-	docker-compose run --rm -T listening-data-api-php ./vendor/bin/codecept run --coverage --coverage-html
+	docker-compose run --rm -T listening-data-api-php ./vendor/bin/behat
 
 ## Run cs on docker
 docker-cs:
@@ -56,5 +51,6 @@ docker-cs:
 ## Run qa on docker
 docker-qa:
 	docker-compose run -T listening-data-api-php composer install --no-scripts
+	docker-compose run --rm -T listening-data-api-php ./vendor/bin/php-cs-fixer fix
 	docker-compose run --rm -T listening-data-api-php ./vendor/bin/composer-unused
 	docker-compose run --rm -T listening-data-api-php ./vendor/bin/phpstan analyse src --level 8

@@ -43,16 +43,14 @@ class ArtistsDataRepository
 
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
-        if(false === $stmt)
-        {
+        if (false === $stmt) {
             throw new DatabaseException();
         }
 
         $stmt->bind_param('iss', $artistId, $startDate, $endDate);
         $stmt->execute();
         $result = $stmt->get_result();
-        if(false === $result)
-        {
+        if (false === $result) {
             throw new DatabaseException();
         }
 
@@ -76,16 +74,14 @@ class ArtistsDataRepository
 
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
-        if(false === $stmt)
-        {
+        if (false === $stmt) {
             throw new DatabaseException();
         }
 
         $stmt->bind_param('iss', $artistId, $startDate, $endDate);
         $stmt->execute();
         $result = $stmt->get_result();
-        if(false === $result)
-        {
+        if (false === $result) {
             throw new DatabaseException();
         }
 
