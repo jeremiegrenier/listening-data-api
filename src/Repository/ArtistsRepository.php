@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Exception\DatabaseException;
 use App\Exception\UpdateNotAllowedException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ArtistsRepository.
@@ -21,13 +22,18 @@ class ArtistsRepository
     /** @var MysqlConnection */
     private $connection;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
-     * ArtistsDataRepository constructor.
+     * ArtistsRepository constructor.
      * @param MysqlConnection $connection
+     * @param LoggerInterface $logger
      */
-    public function __construct(MysqlConnection $connection)
+    public function __construct(MysqlConnection $connection, LoggerInterface $logger)
     {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function isArtistExist(int $artistId): bool
@@ -37,11 +43,25 @@ class ArtistsRepository
                 WHERE artists.id = ?                
         ";
 
+        $this->logger->info(
+            'Execute query to check if artist exist',
+            [
+                'artistId' => $artistId,
+            ]
+        );
+
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
 
         $stmt->bind_param('i', $artistId);
         if (!$stmt->execute()) {
+            $this->logger->error(
+                'Error when execute query to check if artist exist',
+                [
+                    'artistId' => $artistId,
+                ]
+            );
+
             return false;
         }
         $stmt->store_result();
@@ -52,7 +72,25 @@ class ArtistsRepository
 
     public function updateFieldOnArtist(int $artistId, string $field, $value): bool
     {
+        $this->logger->info(
+            'Update field for artist',
+            [
+                'artistId' => $artistId,
+                'field' => $field,
+                'value' => $value,
+            ]
+        );
+
         if (!in_array($field, self::ALLOWED_FIELDS_UPDATE)) {
+            $this->logger->error(
+                'Field to update is not allowed',
+                [
+                    'artistId' => $artistId,
+                    'field' => $field,
+                    'value' => $value,
+                ]
+            );
+
             throw new UpdateNotAllowedException();
         }
 
@@ -64,6 +102,15 @@ class ArtistsRepository
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
         if (false === $stmt) {
+            $this->logger->error(
+                'Error when prepare query to update field on artist',
+                [
+                    'artistId' => $artistId,
+                    'field' => $field,
+                    'value' => $value,
+                ]
+            );
+
             throw new DatabaseException();
         }
 

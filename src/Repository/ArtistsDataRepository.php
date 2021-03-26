@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Exception\DatabaseException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ArtistsDataRepository.
@@ -18,13 +19,18 @@ class ArtistsDataRepository
     /** @var MysqlConnection */
     private $connection;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * ArtistsDataRepository constructor.
      * @param MysqlConnection $connection
+     * @param LoggerInterface $logger
      */
-    public function __construct(MysqlConnection $connection)
+    public function __construct(MysqlConnection $connection, LoggerInterface $logger)
     {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function getNumberListeningForArtistForYear(int $artistId, int $year): int
@@ -41,9 +47,25 @@ class ArtistsDataRepository
                 AND artists_data.date < ?                
         ";
 
+        $this->logger->info(
+            'Execute query to get number of streams for artist',
+            [
+                'artistId' => $artistId,
+                'year' => $year,
+            ]
+        );
+
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
         if (false === $stmt) {
+            $this->logger->error(
+                'Error when prepare query to get number of streams for artist',
+                [
+                    'artistId' => $artistId,
+                    'year' => $year,
+                ]
+            );
+
             throw new DatabaseException();
         }
 
@@ -51,6 +73,14 @@ class ArtistsDataRepository
         $stmt->execute();
         $result = $stmt->get_result();
         if (false === $result) {
+            $this->logger->error(
+                'Error when execute query to get number of streams for artist',
+                [
+                    'artistId' => $artistId,
+                    'year' => $year,
+                ]
+            );
+
             throw new DatabaseException();
         }
 
@@ -72,9 +102,25 @@ class ArtistsDataRepository
                 GROUP BY gender          
         ";
 
+        $this->logger->info(
+            'Execute query to get number of streams for artist by gender',
+            [
+                'artistId' => $artistId,
+                'year' => $year,
+            ]
+        );
+
         $i = $this->connection->getInstance();
         $stmt = $i->prepare($sql);
         if (false === $stmt) {
+            $this->logger->error(
+                'Error when prepare query to get number of streams for artist by gender',
+                [
+                    'artistId' => $artistId,
+                    'year' => $year,
+                ]
+            );
+
             throw new DatabaseException();
         }
 
@@ -82,6 +128,14 @@ class ArtistsDataRepository
         $stmt->execute();
         $result = $stmt->get_result();
         if (false === $result) {
+            $this->logger->error(
+                'Error when execute query to get number of streams for artist by gender',
+                [
+                    'artistId' => $artistId,
+                    'year' => $year,
+                ]
+            );
+
             throw new DatabaseException();
         }
 

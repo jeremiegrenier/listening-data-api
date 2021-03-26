@@ -5,7 +5,8 @@
     "license": "proprietary",
     "require": {
         "php": "^7.4",
-        "php-di/php-di": "^6.3"
+        "php-di/php-di": "^6.3",
+        "monolog/monolog": "^2.2"
     },
     "autoload": {
       "psr-4": {
@@ -22,6 +23,7 @@
         "phpstan/phpstan": "^0.12.82",
         "icanhazstring/composer-unused": "^0.7.5",
         "behat/behat": "^3.8",
-        "imbo/behat-api-extension": "^2.3"
+        "imbo/behat-api-extension": "^2.3",
+        "phpmd/phpmd": "^2.9"
     }
 }

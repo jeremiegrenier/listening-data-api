@@ -1,3 +1,6 @@
 vendor/
 
 .php_cs.cache
+
+logs
+!logs/.gitkeep

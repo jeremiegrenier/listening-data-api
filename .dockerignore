@@ -6,3 +6,6 @@ docker-compose.override.yml
 .git
 
 .php_cs.cache
+
+logs
+!logs/.gitkeep

@@ -5,8 +5,8 @@ services:
   listening-data-api-php:
     image: ${IMAGE_NAME}-php:${IMAGE_TAG}
     environment:
-      APP_ENV: prod
-      MYSQL_HOST: listening-data-api-data
+      APP_ENV: ${APP_ENV}
+      MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_USERNAME: ${MYSQL_USER}
       MYSQL_PASSWD: ${MYSQL_PASSWORD}
       MYSQL_DBNAME: ${MYSQL_DB}
