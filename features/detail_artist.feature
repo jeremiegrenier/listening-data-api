@@ -20,12 +20,12 @@ Feature: Detailed artist view
               "genderStat": [
                   {
                       "gender": "F",
-                      "nb_streams": "3",
+                      "nb_streams": 3,
                       "percentage": 50
                   },
                   {
                       "gender": "H",
-                      "nb_streams": "3",
+                      "nb_streams": 3,
                       "percentage": 50
                   }
               ]
@@ -51,12 +51,12 @@ Feature: Detailed artist view
               "genderStat": [
                   {
                       "gender": "F",
-                      "nb_streams": "6",
+                      "nb_streams": 6,
                       "percentage": 60
                   },
                   {
                       "gender": "H",
-                      "nb_streams": "4",
+                      "nb_streams": 4,
                       "percentage": 40
                   }
               ]
@@ -76,11 +76,11 @@ Feature: Detailed artist view
       {
           "data": [],
           "errors": [
-          {
-              "message": "Artist \"7\" not exist",
-              "internalDetail": "Artist \"7\" not exist",
-              "context": null
-          }
-      ]
+            {
+                "message": "Artist \"7\" not exist",
+                "internalDetail": "Artist \"7\" not exist",
+                "context": null
+            }
+        ]
       }
       """

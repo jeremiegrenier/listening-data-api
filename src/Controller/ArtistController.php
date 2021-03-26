@@ -45,16 +45,10 @@ class ArtistController
             ? $queryString['year']
             : (new \DateTime())->format('Y');
 
-        list($listeningNumber, $listeningByGender) = $this->artistsManager->getListeningStatistics((int) $artistId, $year);
-
         return new FormattedResponse(
             true,
             '',
-            [
-                'year' => $year,
-                'listeningNumber' => $listeningNumber,
-                'genderStat' => $listeningByGender,
-            ]
+            $this->artistsManager->getListeningStatistics((int) $artistId, $year)
         );
     }
 

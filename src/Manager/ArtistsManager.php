@@ -6,6 +6,8 @@ namespace App\Manager;
 
 use App\Exception\ArtistNotFoundException;
 use App\Exception\MissingOperationElementException;
+use App\Model\GenderStatistic;
+use App\Model\ListeningStatistics;
 use App\Repository\ArtistsDataRepository;
 use App\Repository\ArtistsRepository;
 
@@ -41,7 +43,7 @@ class ArtistsManager
         $this->artistsDataRepository = $artistsDataRepository;
     }
 
-    public function getListeningStatistics(int $artistId, string $year): array
+    public function getListeningStatistics(int $artistId, string $year): ListeningStatistics
     {
         if (!$this->artistsRepository->isArtistExist($artistId)) {
             throw new ArtistNotFoundException($artistId);
@@ -50,12 +52,16 @@ class ArtistsManager
         $listeningNumber = $this->artistsDataRepository->getNumberListeningForArtistForYear((int) $artistId, (int) $year);
         $listeningByGender = $this->artistsDataRepository->getNumberListeningForArtistForYearByGender((int) $artistId, (int) $year);
 
-        foreach ($listeningByGender as &$genderStat) {
-            $genderStat['percentage'] = $genderStat['nb_streams'] / $listeningNumber * 100;
+        $genderStatistics = [];
+        foreach ($listeningByGender as $genderStat) {
+            $genderStatistics[] = new GenderStatistic(
+                $genderStat['gender'],
+                (int) $genderStat['nb_streams'],
+                $genderStat['nb_streams'] / $listeningNumber * 100
+            );
         }
 
-        //TODO: move to model !!
-        return [$listeningNumber, $listeningByGender];
+        return new ListeningStatistics($year, $listeningNumber, $genderStatistics);
     }
 
     public function updateArtistsFromOperation(int $artistId, array $operations): bool
