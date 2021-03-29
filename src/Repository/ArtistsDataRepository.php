@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Exception\DatabaseException;
+use App\Model\ArtistAverageStatistics;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -142,6 +143,125 @@ class ArtistsDataRepository
         $results = [];
         while (null !== ($r = $result->fetch_assoc())) {
             $results[] = $r;
+        }
+
+        return $results;
+    }
+
+    public function getGlobalAverageFromDate(\DateTime $startDate, \DateTime $endDate): ?string
+    {
+        $startDate = $startDate->format('Y-m-d');
+        $endDate = $endDate->format('Y-m-d');
+
+        $sql = "SELECT AVG(global_nb_streams) as average_global_nb_streams
+                FROM (
+                    SELECT date, SUM(nb_streams) as global_nb_streams
+                    FROM artists_data
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY date
+                ) t        
+        ";
+
+        $this->logger->info(
+            'Execute query to get average number of streams',
+            [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+            ]
+        );
+
+        $i = $this->connection->getInstance();
+        $stmt = $i->prepare($sql);
+        if (false === $stmt) {
+            $this->logger->error(
+                'Error when prepare query to get average number of streams',
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'e' => $i->error
+                ]
+            );
+
+            throw new DatabaseException();
+        }
+
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (false === $result) {
+            $this->logger->error(
+                'Error when execute query to get average number of streams',
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                ]
+            );
+
+            throw new DatabaseException();
+        }
+
+        $result = $result->fetch_array();
+
+        return $result['average_global_nb_streams'];
+    }
+
+    public function getAverageByArtistFromDate(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $startDate = $startDate->format('Y-m-d');
+        $endDate = $endDate->format('Y-m-d');
+
+        $sql = "SELECT artist_id, AVG(nb_streams_by_artist) as avg_stream_by_artist
+                FROM(                
+                    SELECT artist_id, date, SUM(nb_streams) as nb_streams_by_artist
+                    FROM artists_data
+                    WHERE date BETWEEN ? AND ?
+                    GROUP BY artist_id, date
+                ) t 
+                GROUP BY artist_id
+        ";
+
+        $this->logger->info(
+            'Execute query to get average number of streams by artist',
+            [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+            ]
+        );
+
+        $i = $this->connection->getInstance();
+        $stmt = $i->prepare($sql);
+        if (false === $stmt) {
+            $this->logger->error(
+                'Error when prepare query to get average number of streams by artist',
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'error' => $i->error
+                ]
+            );
+
+            throw new DatabaseException();
+        }
+
+        $stmt->bind_param('ss', $startDate, $endDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (false === $result) {
+            $this->logger->error(
+                'Error when execute query to get average number of streamsby artist',
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'error' => $stmt->error,
+                ]
+            );
+
+            throw new DatabaseException();
+        }
+
+        $results = [];
+        while (null !== ($r = $result->fetch_assoc())) {
+            $results[] = new ArtistAverageStatistics($r['artist_id'], $r['avg_stream_by_artist']);
         }
 
         return $results;

@@ -28,13 +28,13 @@ function main(): \App\Model\FormattedResponse
 
     $queryParamsMatches = [];
     try {
-        if (preg_match('#^/manager$#', $uri)) {
+        if (preg_match('#^/manager(/|\?.*)$#', $uri)) {
             if ('GET' !== $httpVerb) {
                 throw new \App\Exception\MethodNotAllowedException($httpVerb);
             }
             $controller = $container->get(\App\Controller\ManagerController::class);
 
-            return $controller->getCompiledData();
+            return $controller->getCompiledData($parsedQueryString);
         }
 
         if (preg_match('#^/artists/(?<artistId>[^?/]*)(/|\?.*)?$#', $uri, $queryParamsMatches)) {
@@ -55,7 +55,7 @@ function main(): \App\Model\FormattedResponse
             return $response;
         }
 
-        throw new \App\Exception\RouteNotFoundException();
+        throw new \App\Exception\RouteNotFoundException($uri);
     } catch (\App\Exception\AbstractException $e) {
         return new \App\Model\FormattedResponse(
             false,
