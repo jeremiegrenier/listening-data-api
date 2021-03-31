@@ -50,7 +50,7 @@ class ManagerController
                 []
             );
 
-            throw new InvalidDateException();
+            throw new InvalidDateException('Invalid date format. (Allowed : YYYY-mm-dd)');
         }
 
         $date = $queryString['date'];
@@ -61,6 +61,10 @@ class ManagerController
                 'date' => $date,
             ]
         );
+
+        if (new \DateTime($date) > new \DateTime()) {
+            throw new InvalidDateException('Date could not be in future');
+        }
 
         return new FormattedResponse(
             true,

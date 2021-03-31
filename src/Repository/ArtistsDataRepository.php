@@ -64,6 +64,7 @@ class ArtistsDataRepository
                 [
                     'artistId' => $artistId,
                     'year' => $year,
+                    'error' => $i->error,
                 ]
             );
 
@@ -79,6 +80,7 @@ class ArtistsDataRepository
                 [
                     'artistId' => $artistId,
                     'year' => $year,
+                    'error' => $stmt->error,
                 ]
             );
 
@@ -119,6 +121,7 @@ class ArtistsDataRepository
                 [
                     'artistId' => $artistId,
                     'year' => $year,
+                    'error' => $i->error,
                 ]
             );
 
@@ -134,6 +137,7 @@ class ArtistsDataRepository
                 [
                     'artistId' => $artistId,
                     'year' => $year,
+                    'error' => $stmt->error,
                 ]
             );
 
@@ -194,6 +198,7 @@ class ArtistsDataRepository
                 [
                     'startDate' => $startDate,
                     'endDate' => $endDate,
+                    'error' => $stmt->error,
                 ]
             );
 

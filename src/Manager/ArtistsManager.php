@@ -6,8 +6,11 @@ namespace App\Manager;
 
 use App\Exception\ArtistNotFoundException;
 use App\Exception\MissingOperationElementException;
+use App\Exception\OperationNotExistException;
+use App\Exception\OperationNotManagedYetException;
 use App\Model\GenderStatistic;
 use App\Model\ListeningStatistics;
+use App\Model\Operation;
 use App\Repository\ArtistsDataRepository;
 use App\Repository\ArtistsRepository;
 
@@ -64,38 +67,37 @@ class ArtistsManager
         return new ListeningStatistics($year, $listeningNumber, $genderStatistics);
     }
 
+    /**
+     * @param int $artistId
+     * @param array<Operation> $operations
+     *
+     * @return bool
+     *
+     * @throws ArtistNotFoundException
+     * @throws MissingOperationElementException
+     */
     public function updateArtistsFromOperation(int $artistId, array $operations): bool
     {
         if (!$this->artistsRepository->isArtistExist($artistId)) {
             throw new ArtistNotFoundException($artistId);
         }
 
+        /** @var Operation $operation */
         foreach ($operations as $operation) {
-            if (!array_key_exists('op', $operation)) {
-                throw new MissingOperationElementException('op');
-            }
-            $op = $operation['op'];
-
-            if (!array_key_exists('path', $operation)) {
-                throw new MissingOperationElementException('path');
-            }
-            $path = $operation['path'];
-
-            $value = isset($operation['value']) ? $operation['value'] : null;
-
-//            $from = isset($operation['from']) ? $operation['from'] : null;
+            $op = $operation->getOp();
+            $value = $operation->getValue();
 
             switch ($op) {
                 case self::PATCH_REPLACE:
-                    $this->applyReplaceOperation($artistId, $path, $value);
+                    $this->applyReplaceOperation($artistId, $operation->getField(), $value);
                     break;
                 case self::PATCH_REMOVE:
                 case self::PATCH_MOVE:
                 case self::PATCH_COPY:
                 case self::PATCH_ADD:
-                    throw new \InvalidArgumentException(sprintf('Operation %s not managed', $operation));
+                    throw new OperationNotManagedYetException($op);
                 default:
-                    throw new \InvalidArgumentException(sprintf('Operation %s not exist', $operation));
+                    throw new OperationNotExistException($op);
             }
         }
 

@@ -59,6 +59,7 @@ class ArtistsRepository
                 'Error when execute query to check if artist exist',
                 [
                     'artistId' => $artistId,
+                    'error' => $stmt->error,
                 ]
             );
 
@@ -108,6 +109,7 @@ class ArtistsRepository
                     'artistId' => $artistId,
                     'field' => $field,
                     'value' => $value,
+                    'error' => $i->error,
                 ]
             );
 

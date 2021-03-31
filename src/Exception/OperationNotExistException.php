@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace App\Exception;
 
 /**
- * class InvalidDateException.
+ * class OperationNotExistException.
  *
  * @author jgrenier
  *
  * @version 1.0.0
  */
-class InvalidDateException extends AbstractException
+class OperationNotExistException extends AbstractException
 {
     /** @var string */
-    private $reason;
+    private $operation;
 
-    public function __construct(string $reason)
+    public function __construct(string $operation)
     {
-        $this->reason = $reason;
+        $this->$operation = $operation;
         parent::__construct();
     }
 
@@ -27,7 +27,7 @@ class InvalidDateException extends AbstractException
      */
     public function getExceptionMessage(): string
     {
-        return 'Date given is invalid : '.$this->reason;
+        return 'Operation '.$this->operation.' not exist';
     }
 
     /**

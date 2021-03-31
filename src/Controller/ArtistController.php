@@ -8,6 +8,7 @@ use App\Exception\ArtistNotFoundException;
 use App\Exception\InvalidOperationFormatException;
 use App\Manager\ArtistsManager;
 use App\Model\FormattedResponse;
+use App\Model\Operation;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -95,7 +96,15 @@ class ArtistController
             throw new InvalidOperationFormatException();
         }
 
-        $this->artistsManager->updateArtistsFromOperation((int) $artistId, $body);
+        $operations = array_map(static function ($operation) {
+            return new Operation(
+                $operation['op'],
+                $operation['path'],
+                array_key_exists('value', $operation) ? $operation['value'] : null
+            );
+        }, $body);
+
+        $this->artistsManager->updateArtistsFromOperation((int) $artistId, $operations);
 
         $this->logger->info(
             'Artist updated',

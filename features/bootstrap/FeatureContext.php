@@ -89,6 +89,33 @@ class FeatureContext extends \Imbo\BehatApiExtension\Context\ApiContext
     }
 
     /**
+     * @Then artist :artistId should have :value in :path
+     */
+    public function artistShouldHaveIn($artistId, $value, $path)
+    {
+        $sql = "SELECT * FROM `artists`
+                WHERE id = ?          
+        ";
+
+        $stmt = $this->databaseConnection->prepare($sql);
+        $stmt->bind_param('i', $artistId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if (false === $result) {
+            throw new \Exception('Artist not found');
+        }
+
+        $result = $result->fetch_array();
+
+        if($result[$path] !== $value)
+        {
+            throw new \Exception('Value '.$value.' for '.$path.' not found in artist '.$artistId.'. Found : '.$result[$path]);
+        }
+    }
+
+
+    /**
      * @AfterScenario
      */
     public function cleanDB(AfterScenarioScope $scope)

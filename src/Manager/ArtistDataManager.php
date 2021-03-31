@@ -37,7 +37,7 @@ class ArtistDataManager
     public function getGlobalStatisticsFromDate(\DateTime $endDate): GlobalAverageStatistics
     {
         $startDate = clone $endDate;
-        $startDate->modify('-3 days');
+        $startDate->modify('-2 days midnight');
 
         return new GlobalAverageStatistics(
             $startDate,

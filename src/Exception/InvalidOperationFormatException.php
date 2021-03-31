@@ -18,7 +18,7 @@ class InvalidOperationFormatException extends AbstractException
      */
     public function getExceptionMessage(): string
     {
-        return 'Operations are invalide';
+        return 'Operations are invalid';
     }
 
     /**
